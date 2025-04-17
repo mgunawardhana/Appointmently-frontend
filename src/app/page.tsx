@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, PlusCircle } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -47,8 +47,73 @@ const bookingSchema = z.object({
 
 type BookingValues = z.infer<typeof bookingSchema>;
 
+const TimeSlotInput = ({ onTimeSlotAdded }: { onTimeSlotAdded: (slot: { date: string; time: string }) => void }) => {
+  const [date, setDate] = useState<Date | null>(null);
+  const [time, setTime] = useState<string>("");
+
+  const handleAddTimeSlot = () => {
+    if (date && time) {
+      const formattedDate = format(date, "yyyy-MM-dd");
+      onTimeSlotAdded({ date: formattedDate, time });
+      setDate(null);
+      setTime("");
+    }
+  };
+
+  return (
+    <div className="flex flex-col space-y-2">
+      <FormLabel>Add Available Time Slot</FormLabel>
+      <div className="flex space-x-2">
+        <Popover>
+          <PopoverTrigger asChild>
+            <FormControl>
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-[140px] pl-3 text-left font-normal",
+                  !date && "text-muted-foreground"
+                )}
+              >
+                {date ? (
+                  format(date, "PPP")
+                ) : (
+                  <span>Pick a date</span>
+                )}
+                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+              </Button>
+            </FormControl>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={setDate}
+              disabled={(date) =>
+                date < new Date()
+              }
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+        <Input
+          type="time"
+          value={time}
+          onChange={(e) => setTime(e.target.value)}
+          placeholder="Time"
+          className="w-[100px]"
+        />
+        <Button type="button" onClick={handleAddTimeSlot} variant="secondary">
+          <PlusCircle className="mr-2 h-4 w-4" />
+          Add Slot
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 export default function Home() {
   const [suggestedSlots, setSuggestedSlots] = useState<SuggestOptimalAppointmentSlotsOutput | null>(null);
+  const [availableTimeSlots, setAvailableTimeSlots] = useState<{ date: string; time: string }[]>([]);
   const [isBookingConfirmed, setIsBookingConfirmed] = useState(false);
   const { toast } = useToast();
 
@@ -130,6 +195,10 @@ export default function Home() {
         description: "Failed to send confirmation email.",
       });
     }
+  };
+
+  const handleTimeSlotAdded = (slot: { date: string; time: string }) => {
+    setAvailableTimeSlots([...availableTimeSlots, slot]);
   };
 
   return (
@@ -240,6 +309,8 @@ export default function Home() {
               )}
             />
 
+            <TimeSlotInput onTimeSlotAdded={handleTimeSlotAdded} />
+
             <FormField
               control={form.control}
               name="time"
@@ -255,12 +326,17 @@ export default function Home() {
                       <option value="" disabled>
                         Select a time
                       </option>
+                      {availableTimeSlots.map((slot) => (
+                        <option key={`${slot.date}-${slot.time}`} value={slot.time}>
+                          {slot.time}
+                        </option>
+                      ))}
                       {suggestedSlots?.suggestedSlots?.map((slot) => (
                         <option key={`${slot.date}-${slot.time}`} value={slot.time}>
                           {slot.time}
                         </option>
                       ))}
-                      {!suggestedSlots?.suggestedSlots?.length && (
+                      {(!suggestedSlots?.suggestedSlots?.length && !availableTimeSlots.length) && (
                         <option disabled>No slots available for this date</option>
                       )}
                     </select>
