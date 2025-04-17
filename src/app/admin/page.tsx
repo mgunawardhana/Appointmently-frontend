@@ -78,9 +78,9 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-secondary-gradient p-4">
+    <div className="flex flex-col min-h-screen p-4">
       <div className="container mx-auto py-10">
-        <Card className="bg-card shadow-xl">
+        <Card className="shadow-xl">
           <CardHeader>
             <CardTitle className="text-2xl font-bold">Admin Dashboard</CardTitle>
             <CardDescription>Manage and view appointments</CardDescription>

@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <nav className="bg-secondary-gradient p-4">
+        <nav className="bg-secondary p-4">
           <div className="container mx-auto flex justify-between items-center">
             <Link href="/" className="text-xl font-bold text-foreground">
               Appointmently
@@ -46,4 +46,3 @@ export default function RootLayout({
     </html>
   );
 }
-

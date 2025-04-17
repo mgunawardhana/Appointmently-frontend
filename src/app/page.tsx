@@ -133,7 +133,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-secondary-gradient items-center justify-center p-4">
+    <div className="flex flex-col min-h-screen items-center justify-center p-4">
       <AlertDialog open={isBookingConfirmed} onOpenChange={setIsBookingConfirmed}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -273,7 +273,7 @@ export default function Home() {
               )}
             />
 
-            <Button type="submit" disabled={!isValid} className="w-full bg-accent-gradient text-primary-foreground">
+            <Button type="submit" disabled={!isValid} className="w-full bg-accent text-primary-foreground">
               Book Appointment
             </Button>
           </form>
